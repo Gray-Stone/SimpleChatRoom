@@ -17,11 +17,15 @@ public class Main {
                 BufferedWriter outBuff = new BufferedWriter(new OutputStreamWriter(soc1.getOutputStream()));
 
                 String msg = null;
+
+                sendMsg(outBuff,"nameApple");
+
+
                 int msgCount = 0;
                 while(msgCount<10)
                 {
-                    System.out.printf(" => Sending String # %d \n",msgCount);
                     msg =  "Number " + String.valueOf(msgCount)+ " from client 1..";
+                    System.out.printf(" => Sending String : %s \n",msg);
                     outBuff.write(msg,0,msg.length());
                     outBuff.newLine();
                     outBuff.flush();
@@ -40,5 +44,18 @@ public class Main {
             e.printStackTrace();
         }
 
+    }
+
+    static boolean sendMsg(BufferedWriter outBuff,String msg)
+    {
+        try {
+            outBuff.write(msg,0,msg.length());
+            outBuff.newLine();
+            outBuff.flush();
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }
