@@ -8,25 +8,23 @@ public class Main {
         int portNum = 2333;
 
 
-
-
-
         System.out.printf("trying to create a server at port %d \n ", portNum);
 
-        ClientServer server = new ClientServer(portNum);
+        ClientData dataBase = new ClientData(portNum);
 
-        server.manager.start();
+        Acceptor acceptor = new Acceptor(dataBase);
+        Manager manager = new Manager(dataBase);
 
-        server.acceptor.start();
-
+        acceptor.start();
+        manager.start();
 
         while(true)
         {
-            System.out.printf(">>> acc rc : %d --",server.acceptor.runCountA);
-            System.out.printf("mag rc : %d<< \n", server.manager.runCountM);
-
-//            System.out.printf(">>> acc interrupt : %b --",server.acceptor.isInterrupted());
-//            System.out.printf("mag interrupt : %b<< \n", server.manager.isInterrupted());
+//            System.out.printf(">>> acc rc : %d --",acceptor.runCountA);
+//            System.out.printf("mag rc : %d ::  %d << \n", manager.runCountM/1000, manager.validRunM/1000);
+//
+////            System.out.printf(">>> acc interrupt : %b --",server.acceptor.isInterrupted());
+////            System.out.printf("mag interrupt : %b<< \n", server.manager.isInterrupted());
 
             Thread.sleep(5000);
         }
