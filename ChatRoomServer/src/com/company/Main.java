@@ -1,16 +1,13 @@
 package com.company;
 
 import java.io.*;
-import java.net.ServerSocket;
 
 public class Main {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
         int portNum = 2333;
 
 
-        String test ="P:toID:message";
-        String[] tokens = test.split(":");
 
 
 
@@ -18,15 +15,23 @@ public class Main {
 
         ClientServer server = new ClientServer(portNum);
 
-        server.acceptor.start();
         server.manager.start();
 
+        server.acceptor.start();
 
-        try {
-            server.manager.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+
+        while(true)
+        {
+            System.out.printf(">>> acc rc : %d --",server.acceptor.runCountA);
+            System.out.printf("mag rc : %d<< \n", server.manager.runCountM);
+
+//            System.out.printf(">>> acc interrupt : %b --",server.acceptor.isInterrupted());
+//            System.out.printf("mag interrupt : %b<< \n", server.manager.isInterrupted());
+
+            Thread.sleep(5000);
         }
+
+
 
     }
 

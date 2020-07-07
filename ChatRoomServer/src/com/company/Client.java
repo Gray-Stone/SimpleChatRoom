@@ -12,6 +12,7 @@ public class Client extends Thread {
     BufferedReader recBuff;
     BufferedWriter sendBuff;
     boolean alive = false;
+    int receivedCount =0;
 
 
     class Message {
@@ -83,7 +84,7 @@ public class Client extends Thread {
          return true;
     }
 
-    void receiveMsg()
+    boolean receiveMsg()
     {
         String tempS =null ;
         try {
@@ -91,25 +92,43 @@ public class Client extends Thread {
         } catch (IOException e) {
             System.out.printf("ID: %d : ERROR when receiving \n ", ID);
             alive = false;
+            return false;
         }
         if (tempS == null) {
             System.out.printf("ID: %d : received termination ", ID);
             alive = false;
+            return false;
         }
 
         // wait for buffer to be open, then upload the message.
-        while (newMessage.fetched) {
+        receivedCount++;
+        while (newMessage.fetched==false) {
             ;
         }
         newMessage.msg = tempS;
+        newMessage.fetched = false;
+        return true;
     }
 
     @Override
     public void run()
     {
+        this.setName("ClientNo:" + String.valueOf(this.ID));
+        this.setPriority(7);
+
+        System.out.printf("ID: %d : Client receiver running\n",this.ID);
         // wait for a message to be read
         while(true) {
-            receiveMsg();
+            if (receiveMsg() == false)
+            {break;}
+            if(alive==false)
+            {break;}
+
+            try {
+                this.sleep(5);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 

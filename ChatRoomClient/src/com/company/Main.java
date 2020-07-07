@@ -20,16 +20,21 @@ public class Main {
 
                 sendMsg(outBuff,"nameApple");
 
+                sendMsg(outBuff,"B:Hellow World");
+                sendMsg(outBuff,"B:Hellow 2");
 
-                int msgCount = 0;
-                while(msgCount<10)
-                {
-                    msg =  "Number " + String.valueOf(msgCount)+ " from client 1..";
-                    System.out.printf(" => Sending String : %s \n",msg);
-                    outBuff.write(msg,0,msg.length());
-                    outBuff.newLine();
-                    outBuff.flush();
-                    msgCount++;
+                sendMsg(outBuff,"P:nameApple: to myself");
+
+                while(inBuff.ready()){
+                    System.out.print("From server \n       ->>");
+                    System.out.println(inBuff.readLine());
+                }
+
+                sendMsg(outBuff,"P:peach: hey");
+
+                while(inBuff.ready()){
+                    System.out.print("From server \n       ->>");
+                    System.out.println(inBuff.readLine());
                 }
 
 
