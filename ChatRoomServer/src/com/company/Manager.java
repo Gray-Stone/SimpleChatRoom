@@ -1,5 +1,7 @@
 package com.company;
 
+import java.util.ConcurrentModificationException;
+
 public class Manager extends Thread {
 
     ClientData data;
@@ -16,39 +18,50 @@ public class Manager extends Thread {
 
         this.setName("ManagerThread");
         while(true)
-        {runManager();}
+        {
+            try {
+                runManager();
+            } catch (ConcurrentModificationException e) {
+                System.out.println("error about Concurrent ");
+            }catch (Exception e){
+                System.out.println("ERROR in Acceptor Thread");
+                e.printStackTrace();
+            }
+
+        }
     }
 
-    public  void runManager()
-    {
+    public  void runManager(){
 
 
             runCountM++;
+            while(data.clientHashMapAvailable==false){
+                ;
+            }
+            try {
+                data.clientHashMapAvailable = false;
 
-
-            for (Client cli : data.clientHashMap.values() )
-            {
-                validRunM++;
+                for (Client cli : data.clientHashMap.values()) {
+                    validRunM++;
 //                System.out.printf(" .. Manage user: %s ID: %d \n",cli.nickName,cli.ID);
 
-                // check if user need to be removed
-                if (cli.alive == false)
-                {
-                    // TODO declear the death of this client
-                    cli.closeSoc();
-                    data.manageClientMap(ClientData.mapAction.remove,cli);
-                    continue;
-                }
+                    // check if user need to be removed
+                    if (cli.alive == false) {
+                        // TODO declear the death of this client
+                        cli.closeSoc();
+                        data.manageClientMap(ClientData.mapAction.remove, cli);
+                        continue;
+                    }
 
-                // there are new messages to be process.
-                if (cli.newMessage.fetched == false)
-                {
-                    // Private msg format: P:toName:message
-                    // BroadCast msg format: B:message
-                    data.processMessage(cli);
+                    // there are new messages to be process.
+                    if (cli.newMessage.fetched == false) {
+                        // Private msg format: P:toName:message
+                        // BroadCast msg format: B:message
+                        data.processMessage(cli);
+                    }
                 }
+            }finally {
+                data.clientHashMapAvailable=true;
             }
-
-
     }
 }

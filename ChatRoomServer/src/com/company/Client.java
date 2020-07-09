@@ -14,6 +14,7 @@ public class Client extends Thread {
     boolean alive = false;
     int receivedCount =0;
 
+    int nickNameTimeout = 5 ;
 
     class Message {
         String msg = "";
@@ -29,8 +30,8 @@ public class Client extends Thread {
         this.ID = ID;
 //        get the IO of the socket
         try {
-            recBuff = new BufferedReader(new InputStreamReader(soc.getInputStream()));
-            sendBuff = new BufferedWriter(new OutputStreamWriter(soc.getOutputStream()));
+            recBuff = new BufferedReader(new InputStreamReader(soc.getInputStream() , "UTF-8"));
+            sendBuff = new BufferedWriter(new OutputStreamWriter(soc.getOutputStream() ,"UTF-8"));
 //            if bad things happened, close the socket.
         } catch (IOException e) {
             System.out.printf("ID: %d : Error on initialize client IO. \n", ID);
@@ -44,12 +45,11 @@ public class Client extends Thread {
      * Try to get the nickName of this client. will return false if timeout.
      * @return weather a nickName is successfully gotten
      */
-    boolean getNickName()
+    boolean receiveNickName()
     {
         nickName ="";
         try {
-            int timeout = 3 ;
-            for(int i=0;i<timeout;i++)
+            for(int i=0;i<nickNameTimeout;i++)
             {
                 TimeUnit.SECONDS.sleep(1);
                 if (recBuff.ready()) {
@@ -65,6 +65,7 @@ public class Client extends Thread {
         }
 
         if (nickName.equals("")) { return false;}
+        System.out.printf("ID: %d : Received nickName is : %s",ID,nickName);
         return nickName != null;
     }
 
@@ -72,7 +73,7 @@ public class Client extends Thread {
     boolean sendMsg(String msg)
     {
         try {
-            System.out.printf("ID: %d : Sending Msg to client\n",ID);
+            System.out.printf("ID: %d : Sending Msg to client : %s\n",ID,msg);
             sendBuff.write(msg,0,msg.length());
             sendBuff.newLine();
             sendBuff.flush();
@@ -95,12 +96,13 @@ public class Client extends Thread {
             return false;
         }
         if (tempS == null) {
-            System.out.printf("ID: %d : received termination ", ID);
+            System.out.printf("ID: %d : Termination\n ", ID);
             alive = false;
             return false;
         }
 
         // wait for buffer to be open, then upload the message.
+        System.out.printf("ID: %d : received msg: %s ", ID,tempS);
         receivedCount++;
         while (newMessage.fetched==false) {
             ;

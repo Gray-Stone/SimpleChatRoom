@@ -9,6 +9,8 @@ public class Acceptor extends Thread {
 
     ClientData data;
     public int runCountA = 0;
+    int idCount = 0;
+
 
     Acceptor(ClientData data) throws IOException {
         data.chtSev = new ServerSocket(data.portNum);
@@ -19,18 +21,25 @@ public class Acceptor extends Thread {
         System.out.println("Waiting for clients to connect ");
         this.setName("AcceptorThread");
         while (true) {
-            runAcceptor();
+            try {
+                runAcceptor();
+            }catch (Exception e){
+                System.out.println("ERROR in Acceptor Thread");
+                e.printStackTrace();
+            }
         }
     }
 
     // task for accepting user
     public void runAcceptor() {
         Client tempCli;
-        int idCount = 0;
         // wait for connection
         Socket soc1 = null;
+        System.out.println("");
         try {
             soc1 = data.chtSev.accept();
+            idCount++;
+
         } catch (IOException e) {
             System.out.println("Error trying to accept client, retrying");
             return;
@@ -47,18 +56,29 @@ public class Acceptor extends Thread {
             tempCli.closeSoc();
             return; // don't bother with this client anymore
         }
-        if (tempCli.getNickName() == false) {
+
+        tempCli.sendMsg("\t\t>>SEV: Connected");
+
+        if (tempCli.receiveNickName() == false) {
             System.out.printf("ID: %d : Fail to get a nickname \n ", idCount);
             tempCli.closeSoc();
             return ; // don't bother with this client anymore
         }
 
-        //TODO check duplicate name
+        //TODO check inValid name
+        if (data.allUserNickName.equals(tempCli.nickName)) {
+            System.out.printf("Client ID: %d nickname Invalid\n", tempCli.ID);
+            tempCli.sendMsg("\t\t>>SEV : nickname is invalid.");
+            tempCli.closeSoc();
+            return ;
+        }
+
         for (Client c : data.clientHashMap.values()) {
             if (c.nickName.equals(tempCli.nickName)) {
-                System.out.printf("Client ID: %d nickname conflict with client ID : %d.", tempCli.ID, c.ID);
-                tempCli.nickName = tempCli.nickName + String.valueOf(tempCli.ID);
-                System.out.printf("Client ID: %d :new nickname ,%s \n", tempCli.ID, tempCli.ID);
+                System.out.printf("Client ID: %d nickname conflict with client ID : %d.\n", tempCli.ID, c.ID);
+                tempCli.sendMsg("\t\t>>SEV : nickname is in use.");
+                tempCli.closeSoc();
+                return ;
             }
         }
 
@@ -68,7 +88,6 @@ public class Acceptor extends Thread {
         // now this client can start running it's receiver thread
         tempCli.start();
 
-        idCount++;
         runCountA++;
     }
 }
