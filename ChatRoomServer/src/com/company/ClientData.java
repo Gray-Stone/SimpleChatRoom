@@ -62,6 +62,7 @@ public class ClientData {
                 return ;
             }
             sendClient.sendMsg("Private message from " + cli.nickName +": "  + msg.substring(msg.indexOf(":",2)+1) );
+            cli.sendMsg("Private message to " + sendClient.nickName +": "  + msg.substring(msg.indexOf(":",2)+1) );
             return ;
         }
         // the split is incorrect

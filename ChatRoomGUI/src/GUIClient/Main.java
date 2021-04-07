@@ -5,7 +5,7 @@ public class Main {
 
     public static void main(String[]  args) {
 
-        int portNum = 2333;
+        int portNum = 2555;
         String host = "127.0.0.1";
 
         Comm comm1 = new Comm(host, portNum);

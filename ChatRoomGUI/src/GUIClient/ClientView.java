@@ -44,7 +44,7 @@ public class ClientView extends JFrame implements ActionListener, KeyListener {
     }
 
     void printChatLine(String line){
-        chatContent.append("\n");
+        chatContent.append("\n  ");
         chatContent.append(line);
         // auto scroll to bottom
         try {

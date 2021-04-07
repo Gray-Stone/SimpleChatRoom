@@ -5,7 +5,7 @@ import java.io.*;
 public class Main {
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        int portNum = 2333;
+        int portNum = 2555;
 
 
         System.out.printf("trying to create a server at port %d \n ", portNum);
